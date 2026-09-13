@@ -1,0 +1,13 @@
+[password:evaluated] Event published - 3 handlers
+[password:evaluated] Event data: password | met count | empty
+[password:evaluated] Completed: Update password requirements
+ Event data: password | met count | empty
+
+
+[password:evaluated] Completed: Update strength bars
+ Event data: password | met count | empty
+
+
+[password:evaluated] Completed: Update strength label
+ Event data: password | met count | empty
+

@@ -1,0 +1,16 @@
+{
+  "url": "http://127.0.0.1:8123/auth/login.php?mode=signup",
+  "evidence": {
+    "label": "Very Strong",
+    "bars": 5,
+    "requirements": 5
+  },
+  "exceptions": [],
+  "flow": [
+    "[password:evaluated] Event published - 3 handlers",
+    "[password:evaluated] Event data: password | met count | empty",
+    "[password:evaluated] Completed: Update password requirements\n Event data: password | met count | empty\n\n",
+    "[password:evaluated] Completed: Update strength bars\n Event data: password | met count | empty\n\n",
+    "[password:evaluated] Completed: Update strength label\n Event data: password | met count | empty\n\n"
+  ]
+}

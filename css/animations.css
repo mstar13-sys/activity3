@@ -1,0 +1,113 @@
+/* =======================================================
+   Animations
+   ======================================================= */
+@keyframes draw-pulse {
+  0% {
+    stroke-dashoffset: 340;
+  }
+  55% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -340;
+  }
+}
+@keyframes dot-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+    r: 3;
+  }
+  50% {
+    opacity: 1;
+    r: 4.5;
+  }
+}
+@keyframes float1 {
+  0%,
+  100% {
+    transform: rotate(-2.2deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-2.2deg) translateY(-7px);
+  }
+}
+@keyframes float2 {
+  0%,
+  100% {
+    transform: rotate(2deg) translateY(0);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-9px);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes toast-in {
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes toast-out {
+  to {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Cross-page transition (login.php <-> signup.php) --- */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.995);
+  }
+}
+/* Keep the transition on .shell so fixed-position toast notifications
+   remain anchored to the viewport instead of the page content. */
+.shell {
+  animation: page-fade-in 0.32s var(--ease) both;
+}
+body.page-leaving {
+  pointer-events: none;
+}
+body.page-leaving .shell {
+  animation: page-fade-out 0.2s var(--ease) both;
+}
+
+/* Native cross-document view transition for browsers that support it
+   (progressive enhancement — the JS fade above still covers everyone else). */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

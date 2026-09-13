@@ -1,0 +1,1128 @@
+/* =======================================================
+   Components — reusable pieces of UI
+   ======================================================= */
+
+/* --- heartbeat pulse line (brand panel) --- */
+.pulse-wrap {
+  position: relative;
+  z-index: 2;
+  margin-top: 36px;
+  height: 64px;
+}
+.pulse-wrap svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.pulse-line {
+  fill: none;
+  stroke: #5ce8de;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: draw-pulse 3.2s var(--ease) infinite;
+}
+.pulse-dot {
+  fill: #5ce8de;
+  animation: dot-glow 3.2s var(--ease) infinite;
+}
+.live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9fd8ff;
+  margin-top: 10px;
+}
+.live-tag .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5ce8de;
+  box-shadow: 0 0 0 3px rgba(92, 232, 222, 0.25);
+}
+
+/* --- floating status cards (brand panel) --- */
+.float-cards {
+  position: relative;
+  z-index: 2;
+  margin-top: 34px;
+  height: 118px;
+}
+.fcard {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.97);
+  color: var(--ink);
+  border-radius: 14px;
+  padding: 13px 15px;
+  box-shadow: 0 20px 40px -12px rgba(0, 20, 60, 0.45);
+  width: 236px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.fcard.c1 {
+  top: 0;
+  left: 0;
+  transform: rotate(-2.2deg);
+  animation: float1 6s ease-in-out infinite;
+}
+.fcard.c2 {
+  top: 34px;
+  left: 150px;
+  transform: rotate(2deg);
+  animation: float2 6.5s ease-in-out infinite;
+}
+.fcard .ic {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.fcard.c1 .ic {
+  background: var(--teal-light);
+  color: var(--teal);
+}
+.fcard.c2 .ic {
+  background: var(--primary-fixed);
+  color: var(--primary);
+}
+.fcard .t1 {
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.fcard .t2 {
+  font-size: 11.5px;
+  color: var(--ink-variant);
+  margin-top: 2px;
+  line-height: 1.3;
+}
+
+.feature-list {
+  position: relative;
+  z-index: 2;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.feature-list .fi {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14.5px;
+  color: #dbe6f8;
+}
+.feature-list .fi .ic {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8fd8ff;
+}
+
+/* --- Login / Sign Up tab switcher --- */
+.switcher {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--outline-soft);
+  border-radius: 999px;
+  padding: 4px;
+  margin-bottom: 30px;
+}
+.switcher .thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: var(--surface);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+  transition: transform 0.32s var(--ease);
+}
+.switcher[data-active="signup"] .thumb {
+  transform: translateX(100%);
+}
+.switcher button {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-variant);
+  border-radius: 999px;
+  transition: color 0.25s;
+}
+.switcher button[aria-selected="true"] {
+  color: var(--primary);
+}
+.switcher a {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 10px 0;
+  color: var(--ink-variant);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 999px;
+}
+.switcher[data-active="login"] a:first-of-type,
+.switcher[data-active="signup"] a:last-of-type {
+  color: var(--primary);
+}
+
+/* --- Form panes (login vs signup), merged into a single page ---
+   Idle state: only the .active pane is rendered, in normal flow.
+   While js/auth-switch.js is mid-switch it adds `is-animating` to
+   `.panes`, which lifts BOTH panes into absolute position so they can
+   slide past each other, and animates `.panes`' own height to match
+   the incoming pane (they're different heights) at the same time. */
+.panes {
+  position: relative;
+  overflow: hidden;
+}
+.panes.is-animating {
+  transition: height 0.38s var(--ease);
+}
+.pane {
+  display: none;
+}
+.pane.active {
+  display: block;
+}
+
+.panes.is-animating .pane {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition:
+    transform 0.38s var(--ease),
+    opacity 0.3s var(--ease);
+}
+.panes.is-animating .pane.pane-pos-center {
+  transform: translateX(0);
+  opacity: 1;
+}
+.panes.is-animating .pane.pane-pos-right {
+  transform: translateX(100%);
+  opacity: 0;
+}
+.panes.is-animating .pane.pane-pos-left {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.head-block {
+  margin-bottom: 26px;
+}
+.head-block h2 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.head-block p {
+  margin-top: 6px;
+  font-size: 14.5px;
+  color: var(--ink-variant);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* --- Input fields --- */
+.field label.flabel {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.field .row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.field .row-between a {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: none;
+}
+.field .row-between a:hover {
+  text-decoration: underline;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-wrap .ic-left {
+  position: absolute;
+  left: 13px;
+  color: #93a0b3;
+  display: flex;
+  pointer-events: none;
+}
+.input-wrap .ic-left svg {
+  display: block;
+}
+.input-wrap input {
+  width: 100%;
+  height: 48px;
+  padding: 0 44px;
+  background: var(--surface);
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius-sm);
+  font-size: 14.5px;
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+.input-wrap input::placeholder {
+  color: #a3adbb;
+}
+.input-wrap input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 63, 135, 0.1);
+}
+.input-wrap input.error {
+  border-color: var(--error);
+}
+.input-wrap input.error:focus {
+  box-shadow: 0 0 0 4px rgba(186, 26, 26, 0.1);
+}
+.input-wrap input.valid {
+  border-color: var(--teal-bright);
+}
+.toggle-eye {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: #93a0b3;
+  display: flex;
+  border-radius: 8px;
+}
+.toggle-eye:hover {
+  color: var(--ink);
+  background: var(--outline-soft);
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--ink-variant);
+  margin-top: 6px;
+}
+
+/* Field-level error text, inserted under a field by SmartCareFormHelpers.showError()
+   whenever it's given a specific message (e.g. "This email is already registered"). */
+.field-error {
+  margin: 6px 2px 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--error);
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+.field-error::before {
+  content: "⚠";
+  font-size: 11px;
+  line-height: 1.5;
+  flex-shrink: 0;
+}
+
+.message-area {
+  min-height: 20px;
+  padding: 0 2px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.message-area.info {
+  color: var(--primary);
+}
+.message-area.success {
+  color: var(--teal);
+}
+.message-area.error {
+  color: var(--error);
+}
+
+/* --- Checkboxes --- */
+.check-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+.check-row input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  border: 1.5px solid var(--outline);
+  border-radius: 5px;
+  background: var(--surface);
+  cursor: pointer;
+  position: relative;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+.check-row input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+.check-row input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.check-row input[type="checkbox"].error {
+  border-color: var(--error);
+}
+.check-row label {
+  font-size: 13.5px;
+  color: var(--ink-variant);
+  line-height: 1.5;
+  cursor: pointer;
+}
+.check-row a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.check-row a:hover {
+  text-decoration: underline;
+}
+
+/* --- Role selector (patient / staff) --- */
+.role-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.role-card {
+  position: relative;
+  cursor: pointer;
+}
+.role-card input {
+  position: absolute;
+  opacity: 0;
+}
+.role-card .box {
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius-sm);
+  padding: 13px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  color: var(--ink-variant);
+}
+.role-card input:checked + .box {
+  border-color: var(--primary);
+  background: var(--primary-fixed);
+  color: var(--primary);
+}
+.role-card .box span {
+  font-size: 13px;
+  font-weight: 600;
+}
+.role-card .box .role-icon {
+  display: block;
+}
+
+/* --- Password strength meter --- */
+.strength {
+  margin-top: 14px;
+}
+.strength .bars {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  height: 5px;
+}
+.strength .bars i {
+  display: block;
+  background: var(--outline-soft);
+  border-radius: 99px;
+  transition: background 0.25s;
+}
+.strength .bars i.filled {
+  background: var(--dot-color, var(--teal-bright));
+}
+.strength .label {
+  font-size: 13px;
+  margin-top: 10px;
+  font-weight: 700;
+  color: var(--ink-variant);
+}
+.req-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px 10px;
+}
+.req-list li {
+  font-size: 13px;
+  color: var(--ink-variant);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.req-list li .dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--outline-soft);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+.req-list li.met {
+  color: var(--ink);
+}
+.req-list li.met .dot {
+  background: var(--teal-bright);
+}
+
+/* --- Submit button --- */
+.submit-btn {
+  height: 50px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition:
+    background 0.18s,
+    transform 0.08s,
+    box-shadow 0.18s;
+  box-shadow: 0 8px 20px -8px rgba(0, 63, 135, 0.55);
+}
+.submit-btn:hover {
+  background: var(--primary-light);
+}
+.submit-btn:active {
+  transform: scale(0.98);
+}
+.submit-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+.submit-btn.loading .spinner {
+  display: inline-block;
+}
+.submit-btn.loading .btn-label {
+  display: none;
+}
+
+.switch-foot {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 13.5px;
+  color: var(--ink-variant);
+}
+.switch-foot a,
+.switch-foot button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 0;
+  margin-left: 2px;
+  text-decoration: none;
+}
+.switch-foot a:hover,
+.switch-foot button:hover {
+  text-decoration: underline;
+}
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 26px;
+  font-size: 11.5px;
+  letter-spacing: 0.03em;
+  color: #9aa5b4;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.secure-note::before,
+.secure-note::after {
+  content: "";
+  height: 1px;
+  width: 36px;
+  background: var(--outline-soft);
+}
+
+/* --- Session banner (shown when a PHP session is already logged in) --- */
+.session-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: var(--teal-light);
+  color: var(--teal);
+  border: 1px solid var(--teal-bright);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.session-banner a {
+  color: var(--teal);
+  font-weight: 600;
+  text-decoration: none;
+}
+.session-banner a:hover {
+  text-decoration: underline;
+}
+
+/* --- Authenticated dashboard --- */
+.dashboard-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: clamp(28px, 6vw, 72px) clamp(20px, 7vw, 104px);
+  background: var(--bg);
+  overflow-x: hidden;
+}
+.dashboard-header {
+  max-width: 1120px;
+  margin: 0 auto 42px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.dashboard-header > div {
+  min-width: 0;
+}
+.eyebrow {
+  color: var(--teal);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.dashboard-header h1 {
+  margin-top: 9px;
+  font-size: clamp(28px, 4vw, 46px);
+  line-height: 1.08;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.dashboard-subtitle {
+  margin-top: 10px;
+  color: var(--ink-variant);
+  font-size: 16px;
+}
+.dashboard-logout {
+  min-height: 44px;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid var(--primary);
+  padding-bottom: 3px;
+}
+.dashboard-grid {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.dashboard-card {
+  min-width: 0;
+  min-height: 210px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.dashboard-card-featured {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.card-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-weight: 800;
+}
+.card-icon.teal {
+  background: var(--teal-light);
+  color: var(--teal);
+}
+.card-icon.amber {
+  background: #fff3d6;
+  color: #9a6500;
+}
+.card-label {
+  margin-top: 22px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-variant);
+}
+.dashboard-card-featured .card-label {
+  color: #c6daf6;
+}
+.dashboard-card h2 {
+  margin-top: 6px;
+  font-size: 25px;
+}
+.dashboard-card p:not(.card-label) {
+  margin-top: 7px;
+  color: var(--ink-variant);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.dashboard-card-featured p:not(.card-label) {
+  color: #d9e7fa;
+}
+.dashboard-card strong {
+  display: block;
+  margin-top: 22px;
+  font-size: 13px;
+}
+.dashboard-section {
+  max-width: 1120px;
+  margin: 48px auto 0;
+  padding-top: 30px;
+  border-top: 1px solid var(--outline);
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+.dashboard-section h2 {
+  margin-top: 7px;
+  font-size: 22px;
+}
+.quick-actions {
+  width: min(100%, 540px);
+  display: grid;
+  gap: 9px;
+}
+.quick-action {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 17px;
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: 600 13px inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.quick-action:not(:hover) {
+  overflow-wrap: anywhere;
+}
+.quick-action:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+.quick-action span {
+  font-size: 18px;
+}
+
+/* --- Standalone authentication pages --- */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: var(--bg);
+}
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 38px;
+  background: var(--surface);
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.auth-card-wide {
+  max-width: 520px;
+}
+.auth-card h1 {
+  margin-top: 10px;
+  font-size: 32px;
+  color: var(--ink);
+}
+.auth-subtitle {
+  margin-top: 8px;
+  color: var(--ink-variant);
+  font-size: 14px;
+}
+.auth-links {
+  display: flex;
+  gap: 20px;
+  margin: 28px 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--outline-soft);
+}
+.auth-links a,
+.auth-foot a {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.auth-links a:first-child {
+  color: var(--teal);
+}
+.auth-card form {
+  margin-top: 20px;
+}
+.auth-card input:not([type="checkbox"]):not([type="hidden"]) {
+  width: 100%;
+  height: 46px;
+  padding: 0 13px;
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  outline: none;
+}
+.auth-card input:not([type="checkbox"]):not([type="hidden"]):focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 63, 135, 0.1);
+}
+.auth-card .check-row {
+  font-size: 13px;
+  color: var(--ink-variant);
+}
+.auth-foot {
+  margin-top: 22px;
+  text-align: center;
+  color: var(--ink-variant);
+  font-size: 13px;
+}
+
+/* --- Sync / async validation mode toggle (login form) --- */
+/* --- Toast notifications --- */
+.toast-stack {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px -12px rgba(15, 23, 42, 0.28);
+  padding: 14px 16px;
+  width: 320px;
+  border-left: 4px solid var(--teal-bright);
+  transform: translateX(120%);
+  opacity: 0;
+  animation: toast-in 0.35s var(--ease) forwards;
+}
+.toast.error {
+  border-left-color: var(--error);
+}
+.toast.info {
+  border-left-color: var(--primary);
+}
+.toast .ic {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.toast.error .ic {
+  color: var(--error);
+}
+.toast.info .ic {
+  color: var(--primary);
+}
+.toast.success .ic {
+  color: var(--teal-bright);
+}
+.toast .tt {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.toast .tb {
+  font-size: 12.5px;
+  color: var(--ink-variant);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.toast.leaving {
+  animation: toast-out 0.3s var(--ease) forwards;
+}
+
+/* --- Loading overlay fallback (used when SweetAlert2 is unavailable) --- */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.42);
+  backdrop-filter: blur(3px);
+}
+.loading-overlay-card {
+  width: min(340px, 100%);
+  padding: 28px 24px;
+  text-align: center;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 24px 60px -20px rgba(15, 23, 42, 0.45);
+}
+.loading-overlay-spinner {
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  border: 4px solid rgba(0, 63, 135, 0.18);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+.loading-overlay-title {
+  margin-top: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.loading-overlay-message {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-variant);
+}
+
+/* Current-system auth pages use the attached SmartCare form UI. */
+.switcher a {
+  position: relative;
+  z-index: 1;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-variant);
+  border-radius: 999px;
+  transition: color 0.25s;
+  text-align: center;
+  text-decoration: none;
+}
+.switcher[data-active="login"] a:first-of-type,
+.switcher[data-active="signup"] a:last-of-type {
+  color: var(--primary);
+}
+.auth-card {
+  max-width: 440px;
+}
+.auth-card-wide {
+  max-width: 520px;
+}
+.auth-card input:not([type="checkbox"]):not([type="hidden"]) {
+  width: 100%;
+  height: 48px;
+  padding: 0 44px;
+  background: var(--surface);
+  border: 1.5px solid var(--outline);
+  border-radius: var(--radius-sm);
+  font-size: 14.5px;
+  color: var(--ink);
+  outline: none;
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+.auth-card input:not([type="checkbox"]):not([type="hidden"]):focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 63, 135, 0.1);
+}
+
+/* Remove the legacy card treatment so the zip's form-panel composition is preserved. */
+.auth-card,
+.auth-card-wide {
+  max-width: 420px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+
+/* --- Google Identity Services authentication --- */
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 14px;
+  color: var(--ink-variant);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.oauth-divider::before,
+.oauth-divider::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: var(--outline-soft);
+}
+.oauth-divider span {
+  white-space: nowrap;
+}
+.google-auth-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.google-button-host {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.google-button-host > div,
+.google-button-host iframe {
+  max-width: 100% !important;
+}
+.google-auth-note,
+.google-unavailable {
+  margin: 0;
+  max-width: 390px;
+  text-align: center;
+  color: var(--ink-variant);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+.google-unavailable {
+  padding: 10px 12px;
+  border: 1px solid var(--outline-soft);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+/* Visible OAuth setup fallback. This is replaced by Google's official button once a Client ID is configured. */
+.google-setup-button {
+  width: min(100%, 400px);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 16px;
+  border: 1px solid #747775;
+  border-radius: 4px;
+  background: #fff;
+  color: #1f1f1f;
+  font: 500 14px/1.2 Arial, sans-serif;
+  cursor: pointer;
+  transition: background-color .16s ease, box-shadow .16s ease;
+}
+.google-setup-button:hover {
+  background: #f8fafd;
+  box-shadow: 0 1px 2px rgba(60,64,67,.18);
+}
+.google-setup-button:focus-visible {
+  outline: 2px solid var(--primary, #1a73e8);
+  outline-offset: 2px;
+}
+.google-g {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: #4285f4;
+}
